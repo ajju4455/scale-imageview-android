@@ -12,6 +12,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class ScaleImageView extends ImageView implements OnTouchListener {
+	
 	private float MAX_SCALE = 2f;
 	private int DOUBLE_TAP_SECOND = 400;
 
@@ -128,16 +129,18 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 	}
 
 	protected void zoomTo(float scale, int x, int y) {
+		
 		if (getScale() * scale < mMinScale) {
 			return;
 		}
+		
 		if (scale >= 1 && getScale() * scale > MAX_SCALE) {
 			return;
 		}
+		
 		mMatrix.postScale(scale, scale);
 		// move to center
-		mMatrix.postTranslate(-(mWidth * scale - mWidth) / 2,
-				-(mHeight * scale - mHeight) / 2);
+		mMatrix.postTranslate(-(mWidth * scale - mWidth) / 2, -(mHeight * scale - mHeight) / 2);
 
 		// move x and y distance
 		mMatrix.postTranslate(-(x - (mWidth / 2)) * scale, 0);
@@ -176,8 +179,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 	}
 
 	private float dispDistance() {
-		return FloatMath.sqrt(mWidth * mWidth + mHeight
-				* mHeight);
+		return FloatMath.sqrt(mWidth * mWidth + mHeight * mHeight);
 	}
 
 	@Override
@@ -188,14 +190,12 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 		case MotionEvent.ACTION_POINTER_1_DOWN:
 		case MotionEvent.ACTION_POINTER_2_DOWN:
 			if (touchCount >= 2) {
-				float distance = distance(event.getX(0), event.getX(1),
-						event.getY(0), event.getY(1));
+				float distance = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
 				mPrevDistance = distance;
 				isScaling = true;
 			} else {
 				if (System.currentTimeMillis() <= mLastTime + DOUBLE_TAP_SECOND) {
-					if (30 > Math.abs(mPrevMoveX - event.getX())
-							+ Math.abs(mPrevMoveY - event.getY())) {
+					if (30 > Math.abs(mPrevMoveX - event.getX()) + Math.abs(mPrevMoveY - event.getY())) {
 						isDoubleTap = true;
 						mDoubleTapX = (int) event.getX();
 						mDoubleTapY = (int) event.getY();
@@ -208,8 +208,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (touchCount >= 2 && isScaling) {
-				float dist = distance(event.getX(0), event.getX(1),
-						event.getY(0), event.getY(1));
+				float dist = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
 				float scale = (dist - mPrevDistance) / dispDistance();
 				mPrevDistance = dist;
 				scale += 1;
@@ -231,8 +230,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 			if (event.getPointerCount() <= 1) {
 				isScaling = false;
 				if (isDoubleTap) {
-					if (30 > Math.abs(mDoubleTapX - event.getX())
-							+ Math.abs(mDoubleTapY - event.getY())) {
+					if (30 > Math.abs(mDoubleTapX - event.getX()) + Math.abs(mDoubleTapY - event.getY())) {
 						maxZoomTo(mDoubleTapX, mDoubleTapY);
 						cutting();
 					}
